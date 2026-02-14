@@ -77,12 +77,12 @@ body {
     align-items: center;
 }
 
-/* Make the first cover line red, smaller, centered */
+/* Make the first cover line smaller, centered */
 .cover p:first-child {
-    color: white;              /* red text */
-    font-size: 27px;         /* 20% smaller than 34px */
-    text-align: center;       /* center text */
-    margin: 5px 0;            /* spacing */
+    color: white;              
+    font-size: 27px;         
+    text-align: center;      
+    margin: 5px 0;           
 }
 
 .controls {
@@ -112,15 +112,15 @@ button:disabled {
 @media (max-width: 768px) {
     .book {
         width: 95vw;
-        height: 90vh;   /* almost full screen height */
+        height: 90vh;
     }
     .page {
-        width: 80%;    /* full width on mobile */
+        width: 80%;
         right: 0;
         padding: 15px;
     }
     .page img {
-        max-height: 45%; /* smaller for more space */
+        max-height: 45%;
     }
     .page p {
         font-size: 15px;
@@ -133,6 +133,9 @@ button:disabled {
 </head>
 
 <body>
+
+<!-- Background music -->
+<audio id="bgMusic" src="Tahanan.mp3" loop></audio>
 
 <div class="book" id="book">
 
@@ -181,10 +184,21 @@ button:disabled {
 const book = document.getElementById('book');
 const pages = document.querySelectorAll('.page');
 let current = 0;
+const bgMusic = document.getElementById('bgMusic');
 
 pages.forEach((page, i) => {
     page.style.zIndex = pages.length - i;
 });
+
+// PLAY MUSIC ON FIRST USER INTERACTION
+function playMusic() {
+    bgMusic.play().catch(() => console.log('Audio blocked until user interacts'));
+    document.removeEventListener('click', playMusic);
+    document.removeEventListener('touchstart', playMusic);
+}
+
+document.addEventListener('click', playMusic);
+document.addEventListener('touchstart', playMusic);
 
 // TOUCH SUPPORT
 let touchStartX = 0;
@@ -195,9 +209,8 @@ book.addEventListener('touchstart', (e) => {
 book.addEventListener('touchend', (e) => {
     const touchEndX = e.changedTouches[0].clientX;
     const deltaX = touchEndX - touchStartX;
-
-    if (deltaX < -50) flipNext();  // swipe left
-    else if (deltaX > 50) flipPrev(); // swipe right
+    if (deltaX < -50) flipNext();
+    else if (deltaX > 50) flipPrev();
 });
 
 // Click side flip
