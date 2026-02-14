@@ -19,11 +19,12 @@ body {
 .book {
     width: 90vw;
     max-width: 1100px;
-    height: 60vh;
-    max-height: 700px;
+    height: 80vh;  /* bigger on desktop */
+    max-height: 900px;
     position: relative;
     perspective: 3000px;
     cursor: pointer;
+    touch-action: pan-y;
 }
 
 .page {
@@ -41,13 +42,13 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 30px;
+    padding: 20px;
     backface-visibility: hidden;
 }
 
 .page img {
-    width: 80%;
-    max-height: 60%;
+    width: 90%;
+    max-height: 65%;
     object-fit: cover;
     border-radius: 15px;
     margin-bottom: 20px;
@@ -94,12 +95,22 @@ button:disabled {
     cursor: not-allowed;
 }
 
+/* MOBILE OPTIMIZATION */
 @media (max-width: 768px) {
     .book {
-        height: 70vh;
+        width: 95vw;
+        height: 95vh;   /* almost full screen height */
+    }
+    .page {
+        width: 100%;    /* full width on mobile for easier tap/swipe */
+        right: 0;
+        padding: 15px;
+    }
+    .page img {
+        max-height: 50%;
     }
     .page p {
-        font-size: 18px;
+        font-size: 16px;
     }
 }
 </style>
@@ -113,7 +124,7 @@ button:disabled {
     <div class="page cover">
         <p>💖 Happy Valentines Yot! 💖</p>
         <p>From Yot!</p>
-        <p> Click side to Next</p>
+        <p>Click side or swipe to Next</p>
     </div>
 
     <!-- Page 1 -->
@@ -132,17 +143,12 @@ button:disabled {
     <!-- Page 3 -->
     <div class="page">
         <img src="yot3.jpeg" alt="Photo 3">
-        <p style="font-size:10px;">O, ang iyong ngiti, liwanag ng aking umaga,</p>
-        <p style="font-size:10px;">Parang sinag ng araw sa himpapawid na payapa.</p>
-        <p style="font-size:10px;">Sa bawat titig, puso ko’y napapaibig,</p>
-        <p style="font-size:10px;">At ang mundo’y tila humihinto, sa ganda mong walang kapantay.</p>
-        <p style="font-size:10px;">Ikaw ang bituin sa madilim kong gabi,</p>
-        <p style="font-size:10px;">Ang ilaw sa aking landas na maligoy,</p>
-        <p style="font-size:10px;">At sa bawat ngiti mo, aking sulyap sa langit,</p>
-        <p style="font-size:10px;">Damdamin ko’y nahuhulog, sa walang hanggang pag-ibig.</p>
+        <p style="font-size:16px; text-align:center;">
+            O, ang iyong ngiti, liwanag ng aking umaga. Parang sinag ng araw sa himpapawid na payapa. Sa bawat titig, puso ko’y napapaibig, at ang mundo’y tila humihinto, sa ganda mong walang kapantay. Ikaw ang bituin sa madilim kong gabi, ang ilaw sa aking landas na maligoy, at sa bawat ngiti mo, aking sulyap sa langit. Damdamin ko’y nahuhulog, sa walang hanggang pag-ibig.
+        </p>
     </div>
     
-
+    
     <!-- Page 4 -->
     <div class="page">
         <img src="yot4.jpeg" alt="Photo 4">
@@ -165,33 +171,39 @@ pages.forEach((page, i) => {
     page.style.zIndex = pages.length - i;
 });
 
+// TOUCH SUPPORT
+let touchStartX = 0;
+book.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+});
+
+book.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const deltaX = touchEndX - touchStartX;
+
+    if (deltaX < -50) flipNext();  // swipe left
+    else if (deltaX > 50) flipPrev(); // swipe right
+});
+
+// Click side flip
 book.addEventListener('click', (e) => {
     const rect = book.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
-
-    if (clickX > rect.width / 2) {
-        flipNext();
-    } else {
-        flipPrev();
-    }
+    if (clickX > rect.width / 2) flipNext();
+    else flipPrev();
 });
 
+// BUTTONS
 document.getElementById('next').addEventListener('click', flipNext);
 document.getElementById('prev').addEventListener('click', flipPrev);
 
 function flipNext() {
-    if (current < pages.length - 1) {
-        pages[current].classList.add('flipped');
-        current++;
-    }
+    if (current < pages.length - 1) pages[current].classList.add('flipped'), current++;
     updateButtons();
 }
 
 function flipPrev() {
-    if (current > 0) {
-        current--;
-        pages[current].classList.remove('flipped');
-    }
+    if (current > 0) current--, pages[current].classList.remove('flipped');
     updateButtons();
 }
 
