@@ -16,6 +16,21 @@ body {
     font-family: Arial, sans-serif;
 }
 
+#startMusicBtn {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff1493;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
 .book {
     width: 90vw;
     max-width: 1100px;
@@ -77,12 +92,11 @@ body {
     align-items: center;
 }
 
-/* Make the first cover line red, smaller, centered */
 .cover p:first-child {
-    color: white;               /* red text */
-    font-size: 27px;          /* 20% smaller than 34px */
-    text-align: center;      
-    margin: 5px 0;           
+    color: white;
+    font-size: 27px;
+    text-align: center;
+    margin: 5px 0;
 }
 
 .controls {
@@ -108,7 +122,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* MOBILE OPTIMIZATION */
 @media (max-width: 768px) {
     .book {
         width: 95vw;
@@ -134,32 +147,31 @@ button:disabled {
 
 <body>
 
+<!-- Start Music Button -->
+<button id="startMusicBtn">🎵 Tap to Start Music</button>
+
 <!-- Background music -->
 <audio id="bgMusic" src="Tahanan.mp3" loop></audio>
 
 <div class="book" id="book">
 
-    <!-- Cover -->
     <div class="page cover">
         <p>💖 Happy Valentines Yot! 💖</p>
         <p>From Yot!</p>
         <p>Click side or swipe to Next</p>
     </div>
 
-    <!-- Page 1 -->
     <div class="page">
         <img src="yot1.jpeg" alt="Photo 1">
         <p>Happy Valentine’s Day 💐 Today is a celebration of love, and my heart is grateful for you and the beautiful moments we share. Your presence brings warmth, your smile brings peace, and loving you makes every ordinary day feel special. I hope this reminds you how deeply you are cherished, today and always.</p>
     </div>
 
-    <!-- Page 2 -->
     <div class="page">
         <img src="yot2.jpeg" alt="Photo 2">
         <p>You make every day feel special ❤️</p>
         <p>With you, even the quiet moments glow, every smile feels like a promise, and every heartbeat knows it’s home. In your presence, time slows, love deepens, and my ordinary days turn into beautiful memories written just for us.</p>
     </div>
 
-    <!-- Page 3 -->
     <div class="page">
         <img src="yot3.jpeg" alt="Photo 3">
         <p style="font-size:16px; text-align:center;">
@@ -167,7 +179,6 @@ button:disabled {
         </p>
     </div>
     
-    <!-- Page 4 -->
     <div class="page">
         <img src="yot4.jpeg" alt="Photo 4">
         <p>Araw-araw ay pinupuno mo ng ligaya ang aking puso, at sa bawat sandali kasama ka, ramdam ko ang init ng pagmamahal mo. Parang bulaklak na namumukadkad sa umaga, ikaw ang liwanag na gumagabay sa aking landas, ang tula sa bawat tibok ng aking puso, at sa bawat halakhak at ngiti mo, natututo akong pahalagahan ang bawat sandali at magmahal ng walang hanggan.</p>
@@ -184,40 +195,35 @@ button:disabled {
 const book = document.getElementById('book');
 const pages = document.querySelectorAll('.page');
 const bgMusic = document.getElementById('bgMusic');
+const startBtn = document.getElementById('startMusicBtn');
 let current = 0;
-let musicStarted = false;
 
+// Z-index for pages
 pages.forEach((page, i) => {
     page.style.zIndex = pages.length - i;
+});
+
+// Start music on button click
+startBtn.addEventListener('click', () => {
+    bgMusic.play().catch(() => console.log('Audio failed'));
+    startBtn.style.display = 'none'; // hide button
 });
 
 // TOUCH SUPPORT
 let touchStartX = 0;
 book.addEventListener('touchstart', (e) => {
     touchStartX = e.touches[0].clientX;
-
-    // Start music on first interaction
-    if (!musicStarted) {
-        bgMusic.play().catch(() => console.log('Audio blocked on mobile'));
-        musicStarted = true;
-    }
 });
 
 book.addEventListener('touchend', (e) => {
     const touchEndX = e.changedTouches[0].clientX;
     const deltaX = touchEndX - touchStartX;
-
     if (deltaX < -50) flipNext();
     else if (deltaX > 50) flipPrev();
 });
 
-// Click side flip and start music
+// Click side flip
 book.addEventListener('click', (e) => {
-    if (!musicStarted) {
-        bgMusic.play().catch(() => console.log('Audio blocked on mobile'));
-        musicStarted = true;
-    }
-
     const rect = book.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     if (clickX > rect.width / 2) flipNext();
@@ -225,14 +231,8 @@ book.addEventListener('click', (e) => {
 });
 
 // BUTTONS
-document.getElementById('next').addEventListener('click', () => {
-    if (!musicStarted) { bgMusic.play().catch(() => {}); musicStarted = true; }
-    flipNext();
-});
-document.getElementById('prev').addEventListener('click', () => {
-    if (!musicStarted) { bgMusic.play().catch(() => {}); musicStarted = true; }
-    flipPrev();
-});
+document.getElementById('next').addEventListener('click', flipNext);
+document.getElementById('prev').addEventListener('click', flipPrev);
 
 function flipNext() {
     if (current < pages.length - 1) pages[current].classList.add('flipped'), current++;
