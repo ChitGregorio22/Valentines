@@ -77,10 +77,10 @@ body {
     align-items: center;
 }
 
-/* Make the first cover line smaller, centered */
+/* Make the first cover line red, smaller, centered */
 .cover p:first-child {
-    color: white;              
-    font-size: 27px;         
+    color: white;               /* red text */
+    font-size: 27px;          /* 20% smaller than 34px */
     text-align: center;      
     margin: 5px 0;           
 }
@@ -183,38 +183,41 @@ button:disabled {
 <script>
 const book = document.getElementById('book');
 const pages = document.querySelectorAll('.page');
-let current = 0;
 const bgMusic = document.getElementById('bgMusic');
+let current = 0;
+let musicStarted = false;
 
 pages.forEach((page, i) => {
     page.style.zIndex = pages.length - i;
 });
 
-// PLAY MUSIC ON FIRST USER INTERACTION
-function playMusic() {
-    bgMusic.play().catch(() => console.log('Audio blocked until user interacts'));
-    document.removeEventListener('click', playMusic);
-    document.removeEventListener('touchstart', playMusic);
-}
-
-document.addEventListener('click', playMusic);
-document.addEventListener('touchstart', playMusic);
-
 // TOUCH SUPPORT
 let touchStartX = 0;
 book.addEventListener('touchstart', (e) => {
     touchStartX = e.touches[0].clientX;
+
+    // Start music on first interaction
+    if (!musicStarted) {
+        bgMusic.play().catch(() => console.log('Audio blocked on mobile'));
+        musicStarted = true;
+    }
 });
 
 book.addEventListener('touchend', (e) => {
     const touchEndX = e.changedTouches[0].clientX;
     const deltaX = touchEndX - touchStartX;
+
     if (deltaX < -50) flipNext();
     else if (deltaX > 50) flipPrev();
 });
 
-// Click side flip
+// Click side flip and start music
 book.addEventListener('click', (e) => {
+    if (!musicStarted) {
+        bgMusic.play().catch(() => console.log('Audio blocked on mobile'));
+        musicStarted = true;
+    }
+
     const rect = book.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     if (clickX > rect.width / 2) flipNext();
@@ -222,8 +225,14 @@ book.addEventListener('click', (e) => {
 });
 
 // BUTTONS
-document.getElementById('next').addEventListener('click', flipNext);
-document.getElementById('prev').addEventListener('click', flipPrev);
+document.getElementById('next').addEventListener('click', () => {
+    if (!musicStarted) { bgMusic.play().catch(() => {}); musicStarted = true; }
+    flipNext();
+});
+document.getElementById('prev').addEventListener('click', () => {
+    if (!musicStarted) { bgMusic.play().catch(() => {}); musicStarted = true; }
+    flipPrev();
+});
 
 function flipNext() {
     if (current < pages.length - 1) pages[current].classList.add('flipped'), current++;
