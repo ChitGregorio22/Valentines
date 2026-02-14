@@ -19,7 +19,7 @@ body {
 .book {
     width: 90vw;
     max-width: 1100px;
-    height: 80vh;  /* bigger on desktop */
+    height: 80vh;
     max-height: 900px;
     position: relative;
     perspective: 3000px;
@@ -65,11 +65,24 @@ body {
     transform: rotateY(-180deg) rotateX(6deg);
 }
 
+/* Cover Styling */
 .cover {
     background: linear-gradient(to right, #ff69b4, #ff1493);
     color: white;
     font-size: 34px;
     font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Make the first cover line red, smaller, centered */
+.cover p:first-child {
+    color: white;              /* red text */
+    font-size: 27px;         /* 20% smaller than 34px */
+    text-align: center;       /* center text */
+    margin: 5px 0;            /* spacing */
 }
 
 .controls {
@@ -99,18 +112,21 @@ button:disabled {
 @media (max-width: 768px) {
     .book {
         width: 95vw;
-        height: 95vh;   /* almost full screen height */
+        height: 90vh;   /* almost full screen height */
     }
     .page {
-        width: 100%;    /* full width on mobile for easier tap/swipe */
+        width: 80%;    /* full width on mobile */
         right: 0;
         padding: 15px;
     }
     .page img {
-        max-height: 50%;
+        max-height: 45%; /* smaller for more space */
     }
     .page p {
-        font-size: 16px;
+        font-size: 15px;
+    }
+    .controls {
+        bottom: -60px;
     }
 }
 </style>
@@ -147,7 +163,6 @@ button:disabled {
             O, ang iyong ngiti, liwanag ng aking umaga. Parang sinag ng araw sa himpapawid na payapa. Sa bawat titig, puso ko’y napapaibig, at ang mundo’y tila humihinto, sa ganda mong walang kapantay. Ikaw ang bituin sa madilim kong gabi, ang ilaw sa aking landas na maligoy, at sa bawat ngiti mo, aking sulyap sa langit. Damdamin ko’y nahuhulog, sa walang hanggang pag-ibig.
         </p>
     </div>
-    
     
     <!-- Page 4 -->
     <div class="page">
